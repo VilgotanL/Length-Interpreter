@@ -329,7 +329,7 @@ window.addEventListener("mousemove", codeElResized);
 const searchParams = new URLSearchParams(window.location.search);
 let filePath = searchParams.get("file");
 if(filePath) {
-    fetch(`./${filePath}`).then((response) => response.text()).then((text) => {
+    fetch(`../examples/${filePath}`).then((response) => response.text()).then((text) => {
         if(!codeEl.value) { //in case the request was very slow we dont want to overwrite code that the user wrote before this
             console.log("set text")
             codeEl.value = text;
