@@ -331,6 +331,7 @@ let filePath = searchParams.get("file");
 if(filePath) {
     fetch(`../examples/${filePath}`).then((response) => response.text()).then((text) => {
         codeEl.value = text;
+        lineNumsUpdate();
         console.log("got response");
     });
 }
