@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<!-- yas -->
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Length Interpreter</title>
+
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script defer src="main.js"></script>
+	</head>
+    <body>
+        <div class="main_div">
+            <h1>
+                Length Interpreter
+            </h1>
+            <a href="https://esolangs.org/wiki/Length">Length esolang by Nailuj29</a><p>Interpreter and "assembler" by VilgotanL</p><a href="examples/examples.html">Examples</a>
+            <div class="options_div">
+                <p>Debug:</p> <input id="debug_checkbox" class="options_div_checkbox" type="checkbox" />
+                <p>Slow:</p> <input id="slow_checkbox" class="options_div_checkbox" type="checkbox" />
+            </div>
+            <div class="code_container">
+                <pre id="line_nums" class="line_nums"> 0 </pre><textarea id="input" class="input" contenteditable="true" spellcheck="false">code/input</textarea>
+            </div>
+            <div class="btns_div">
+                <button id="run_btn" class="btn">Run</button>
+                <button id="assemble_btn" class="btn">Assemble</button>
+                <button id="assemble_and_run_btn" class="btn">Assemble and run</button>
+                <button id="unassemble_btn" class="btn">Unassemble</button>
+                <button id="generate_from_string_btn" class="btn">Generate from string</button>
+            </div>
+            <p id="output_info" class="output_info"></p>
+            <pre id="output" class="output" spellcheck="false">output</pre>
+        </div>
+    </body>
+</html>
