@@ -102,11 +102,13 @@ async function run(code) {
         else if(paused) {
             highlightGreenLineNum = pc;
             lineNumsUpdate();
+            stackUpdate(stack);
             await sleepUntilUnpausedOrStepped(initialStopCount);
             if(stopCount !== initialStopCount) break; //break if stopped when paused
             if(!paused) {
                 highlightGreenLineNum = -1;
                 lineNumsUpdate();
+                stackUpdate([]);
             }
         }
 
@@ -195,9 +197,8 @@ async function run(code) {
                 break;
             }
         }
-
+        if((paused || slow) && showStack) stackUpdate(stack);
         if(slow && !paused) { //if slow and not paused (to allow stepping to be faster than 200ms)
-            if(showStack) stackUpdate(stack);
             await sleep(200);
         } else if (iters % 10 === 0) await sleep(1);
 

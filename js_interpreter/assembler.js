@@ -14,14 +14,19 @@ function assemble(code) {
     let newLines = [];
 
     for(let i = 0; i < lines.length; i++) {
-        let line = lines[i].trim().split("#")[0].trim(); //allow for #comments and indentation
-        let n = Math.floor(Number(line));
-        if(instr_lengths.hasOwnProperty(line) && typeof instr_lengths[line] !== "string") {
-            newLines.push("a".repeat(instr_lengths[line]));
-        } else if(!isNaN(n)) {
-            newLines.push("a".repeat(n));
-        } else {
-            newLines.push("a".repeat(line.length));
+        try {
+            let line = lines[i].trim().split("#")[0].trim(); //allow for #comments and indentation
+            let n = Math.floor(Number(line));
+            if(instr_lengths.hasOwnProperty(line) && typeof instr_lengths[line] !== "string") {
+                newLines.push("a".repeat(instr_lengths[line]));
+            } else if(!isNaN(n)) {
+                newLines.push("a".repeat(n));
+            } else {
+                newLines.push("a".repeat(line.length));
+            }
+        } catch(e) {
+            console.log(e);
+            err("Error while assembling: too big line length to generate (at line "+(i)+")");
         }
     }
 
