@@ -72,7 +72,7 @@ function assemble(code) {
 
     return newLines.join("\n");
 }
-function unassemble(code) {
+function disassemble(code) {
     let lines = code.split("\n");
     let newLines = [];
 
@@ -262,8 +262,8 @@ disassembleBtn.addEventListener("click", async function() {
 
     let code = codeEl.value;
 
-    let unassembled = unassemble(code);
-    outputEl.innerText = unassembled;
+    let disassembled = disassemble(code);
+    outputEl.innerText = disassembled;
 
     info("Disassembled successfully!", true);
     setButtonsDisabled(false);
