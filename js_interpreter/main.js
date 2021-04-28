@@ -113,7 +113,7 @@ async function run(code) {
         let instr = instr_lengths[lines[pc]];
         switch(instr) {
             case "inp": {
-                let id = prompt("Input a character:").charCodeAt(0) || 0;
+                let id = (prompt("Input a character:") ?? "").charCodeAt(0) || 0;
                 stack.push(id);
                 outputEl.innerText += String.fromCharCode(id)+"\n";
                 break;
