@@ -20,16 +20,32 @@
             <div class="options_div">
                 <p>Debug:</p> <input id="debug_checkbox" class="options_div_checkbox" type="checkbox" />
                 <p>Slow:</p> <input id="slow_checkbox" class="options_div_checkbox" type="checkbox" />
+                <p>Show stack:</p> <input id="show_stack_checkbox" class="options_div_checkbox" type="checkbox" checked />
+                <p>Pause when start running:</p> <input id="pause_when_ran_checkbox" class="options_div_checkbox" type="checkbox" />
+            </div>
+            <div id="stack_div" class="stack_div">
+                <div class="stack_item"><div class="stack_item_inner">1</div></div>
+                <div class="stack_item"><div class="stack_item_inner">14</div></div>
+                <div class="stack_item"><div class="stack_item_inner">-52.67</div></div>
+                <div class="stack_item"><div class="stack_item_inner">-532322.62332237</div></div>
             </div>
             <div class="code_container">
                 <pre id="line_nums" class="line_nums"> 0 </pre><textarea id="input" class="input" contenteditable="true" spellcheck="false">code/input</textarea>
             </div>
+            <br>
             <div class="btns_div">
-                <button id="run_btn" class="btn">Run</button>
-                <button id="assemble_btn" class="btn">Assemble</button>
-                <button id="assemble_and_run_btn" class="btn">Assemble and run</button>
-                <button id="disassemble_btn" class="btn">Disassemble</button>
-                <button id="generate_from_string_btn" class="btn">Generate from string</button>
+                <div id="btns_div_notrunning">
+                    <button id="run_btn" class="btn">Run</button>
+                    <button id="assemble_btn" class="btn">Assemble</button>
+                    <button id="assemble_and_run_btn" class="btn">Assemble and run</button>
+                    <button id="disassemble_btn" class="btn">Disassemble</button>
+                    <button id="generate_from_string_btn" class="btn">Generate from string</button>
+                </div>
+                <div id="btns_div_running">
+                    <button id="stop_btn" class="btn">Stop</button>
+                    <button id="pause_btn" class="btn">Pause</button>
+                    <button id="step_btn" class="btn">Step</button>
+                </div>
             </div>
             <p id="output_info" class="output_info"></p>
             <pre id="output" class="output" spellcheck="false">output</pre>

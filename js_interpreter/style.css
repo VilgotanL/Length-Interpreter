@@ -68,6 +68,10 @@ body {
 
     background-color: #41ff00;
 }
+.code_container {
+    display: inline-block;
+    width: 100%;
+}
 
 .btns_div {
     display: inline-block;
@@ -140,4 +144,31 @@ p {
     min-height: 1.2em;
     margin: 0;
     margin-right: 0.5em;
+}
+
+.stack_div {
+    display: block;
+    font-size: 16px;
+    height: 2em;
+    margin-top: 15px;
+}
+.stack_item {
+    display: inline-flex;
+    font-size: 16px;
+    margin: 0;
+    padding: 0 10px;
+    background-color: white;
+    min-width: 3em;
+    height: 2em;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
+    margin-right: 8px;
+}
+.stack_item_inner {
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+    height: initial;
+    word-break: break-all;
 }

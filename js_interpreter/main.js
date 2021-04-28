@@ -2,7 +2,10 @@ const root = document.documentElement;
 const codeEl = document.getElementById("input");
 const outputEl = document.getElementById("output");
 const outputInfo = document.getElementById("output_info");
-const lineNumsDiv = document.getElementById("line_nums")
+const lineNumsDiv = document.getElementById("line_nums");
+const stackDiv = document.getElementById("stack_div");
+const notRunningBtnsDiv = document.getElementById("btns_div_notrunning");
+const runningBtnsDiv = document.getElementById("btns_div_running");
 
 const runBtn = document.getElementById("run_btn");
 const assembleBtn = document.getElementById("assemble_btn");
@@ -10,8 +13,14 @@ const assembleAndRunBtn = document.getElementById("assemble_and_run_btn");
 const disassembleBtn = document.getElementById("disassemble_btn");
 const generateFromStringBtn = document.getElementById("generate_from_string_btn");
 
+const stopButton = document.getElementById("stop_btn");
+const pauseButton = document.getElementById("pause_btn");
+const stepButton = document.getElementById("step_btn");
+
 const debugCheckbox = document.getElementById("debug_checkbox");
 const slowCheckbox = document.getElementById("slow_checkbox");
+const showStackCheckbox = document.getElementById("show_stack_checkbox");
+const pauseWhenStartedCheckbox = document.getElementById("pause_when_ran_checkbox");
 
 //instr_lengths["inp"] == 9, instr_lengths[9] == "inp"
 const instr_lengths = {"inp": 9, "add": 10, "sub": 11, "dup": 12, "cond": 13, "gotou": 14, "outn": 15, "outa": 16, "rol": 17, "swap": 18, "mul": 20, "div": 21, "pop": 23, "gotos": 24, "push": 25, "ror": 27};
@@ -19,6 +28,12 @@ let highlightGreenLineNum = -1;
 
 let debug = false;
 let slow = false;
+let showStack = true;
+
+let paused = false;
+let step = false;
+let stopCount = 0; //gets incremented each time stopped, prevents stopping and starting quickly while slow=true breaking the interpreter
+
 
 Object.keys(instr_lengths).forEach(function(key) { //for each key
     instr_lengths[instr_lengths[key]] = key;
@@ -26,16 +41,40 @@ Object.keys(instr_lengths).forEach(function(key) { //for each key
 
 function err(str) {
     info(str, false);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
+    setRunning(false);
     throw new Error(str);
 }
 function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
 }
+function sleepUntilUnpausedOrStepped(initialStopCount) { //also returns when stopped
+    return new Promise(async (r) => {
+        while(true) {
+            await sleep(10);
+            if(step) {
+                step = false;
+                r();
+                break; //just in case promises are weird
+            } else if(paused === false) {
+                r();
+                break;
+            } else if(stopCount !== initialStopCount) {
+                r();
+                break;
+            }
+        }
+    });
+}
 
 
 async function run(code) {
     outputEl.innerText = "";
+    setRunning(true);
+    setPaused(pauseWhenStartedCheckbox.checked);
+
+    let initialStopCount = stopCount; //if stopCount !== initialStopCount then the user clicked stop
+
     let strLines = code.split("\n");
     let lines = []; //list of lengths of each line
     let stack = [];
@@ -51,13 +90,25 @@ async function run(code) {
     }
 
     if(debug) outputEl.innerText += "Starting at line "+(pc)+"\n";
+    if(showStack) stackUpdate(stack);
     let iters = 0;
     while(pc < lines.length) {
+
         if(slow) {
             highlightGreenLineNum = pc;
             lineNumsUpdate();
-            await sleep(200);
-        } else if(iters % 10 === 0) await sleep(1);
+        }
+        if(stopCount !== initialStopCount) break; //stop if we clicked stop button
+        else if(paused) {
+            highlightGreenLineNum = pc;
+            lineNumsUpdate();
+            await sleepUntilUnpausedOrStepped(initialStopCount);
+            if(stopCount !== initialStopCount) break; //break if stopped when paused
+            if(!paused) {
+                highlightGreenLineNum = -1;
+                lineNumsUpdate();
+            }
+        }
 
         let instr = instr_lengths[lines[pc]];
         switch(instr) {
@@ -144,14 +195,23 @@ async function run(code) {
                 break;
             }
         }
+
+        if(slow && !paused) { //if slow and not paused (to allow stepping to be faster than 200ms)
+            if(showStack) stackUpdate(stack);
+            await sleep(200);
+        } else if (iters % 10 === 0) await sleep(1);
+
         pc++;
         iters++;
-
         if(debug) if(pc < lines.length) outputEl.innerText += "\nNow at line "+(pc)+", stack (right=top): ["+(stack.toString())+"]\n";
     }
     highlightGreenLineNum = -1;
     lineNumsUpdate();
+    if(showStack) stackUpdate(stack);
     if(debug) outputEl.innerText += "\nEnded at line "+(pc - 1)+"\n";
+
+    setRunning(false);
+    setPaused(false);
 }
 
 
@@ -168,7 +228,7 @@ function info(str, isGreen) {
 }
 
 runBtn.addEventListener("click", async function() {
-    setButtonsDisabled(true);
+    setNotRunningButtonsDisabled(true);
     info("Running...", true);
 
     let code = codeEl.value;
@@ -176,10 +236,10 @@ runBtn.addEventListener("click", async function() {
     await run(code);
 
     info("Ran successfully!", true);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
 });
 assembleBtn.addEventListener("click", async function() {
-    setButtonsDisabled(true);
+    setNotRunningButtonsDisabled(true);
     info("Assembling...", true);
 
     let code = codeEl.value;
@@ -188,10 +248,10 @@ assembleBtn.addEventListener("click", async function() {
     outputEl.innerText = assembled;
 
     info("Assembled successfully!", true);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
 });
 assembleAndRunBtn.addEventListener("click", async function() {
-    setButtonsDisabled(true);
+    setNotRunningButtonsDisabled(true);
     info("Assembling...", true);
 
     let code = codeEl.value;
@@ -201,10 +261,10 @@ assembleAndRunBtn.addEventListener("click", async function() {
     await run(assembled);
 
     info("Assembled and ran successfully!", true);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
 });
 disassembleBtn.addEventListener("click", async function() {
-    setButtonsDisabled(true);
+    setNotRunningButtonsDisabled(true);
     info("Disassembling...", true);
 
     let code = codeEl.value;
@@ -213,10 +273,10 @@ disassembleBtn.addEventListener("click", async function() {
     outputEl.innerText = disassembled;
 
     info("Disassembled successfully!", true);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
 });
 generateFromStringBtn.addEventListener("click", async function() {
-    setButtonsDisabled(true);
+    setNotRunningButtonsDisabled(true);
     info("Generating from string...", true);
 
     let input = codeEl.value;
@@ -225,8 +285,35 @@ generateFromStringBtn.addEventListener("click", async function() {
     outputEl.innerText = generated;
 
     info("Generated code from string successfully!", true);
-    setButtonsDisabled(false);
+    setNotRunningButtonsDisabled(false);
 });
+
+//stop, pause, step
+stopButton.addEventListener("click", async function() {
+    stopCount++;
+    info("Stopped!", true);
+});
+function setPaused(bool) {
+    paused = bool;
+    if(paused) {
+        stepButton.disabled = false;
+        pauseButton.innerText = "Continue";
+        info("Paused!", true);
+    } else {
+        stepButton.disabled = true;
+        pauseButton.innerText = "Pause";
+        step = false; //just in case
+        info("Running...", true);
+    }
+}
+pauseButton.addEventListener("click", async function() {
+    setPaused(!paused);
+});
+stepButton.addEventListener("click", async function() {
+    step = true; //in sleepUntilUnpausedOrStepped we wait for step to be true and then set it to false
+    info("Stepped!", true);
+});
+setPaused(false);
 
 debugCheckbox.addEventListener("change", function() {
     debug = debugCheckbox.checked;
@@ -234,15 +321,33 @@ debugCheckbox.addEventListener("change", function() {
 slowCheckbox.addEventListener("change", function() {
     slow = slowCheckbox.checked;
 });
+showStackCheckbox.addEventListener("change", function() {
+    showStack = showStackCheckbox.checked;
+    if(!showStack) {
+        stackDiv.style.display = "none";
+    } else {
+        stackDiv.style.display = "block";
+    }
+});
 
 
-function setButtonsDisabled(bool) {
+function setNotRunningButtonsDisabled(bool) {
     runBtn.disabled = bool;
     assembleBtn.disabled = bool;
     assembleAndRunBtn.disabled = bool;
     disassembleBtn.disabled = bool;
     generateFromStringBtn.disabled = bool;
 }
+function setRunning(bool) {
+    if(bool) {
+        notRunningBtnsDiv.style.display = "none";
+        runningBtnsDiv.style.display = "block";
+    } else {
+        notRunningBtnsDiv.style.display = "block";
+        runningBtnsDiv.style.display = "none";
+    }
+}
+setRunning(false);
 
 function lineNumsUpdate() {
     let lines = codeEl.value.split("\n").length;
@@ -272,13 +377,31 @@ function codeElResized() {
 }
 window.addEventListener("mousemove", codeElResized);
 
+//stack
+function stackUpdate(stack) {
+    stackDiv.innerHTML = "";
+    for(let i = 0; i < stack.length; i++) {
+        stackDiv.innerHTML += `<div class="stack_item"><div class="stack_item_inner">${stack[i]}</div></div>`;
+    }
+}
+stackUpdate([]);
+
 //search params ?file=program.len
 const searchParams = new URLSearchParams(window.location.search);
 let filePath = searchParams.get("file");
-if(filePath) {
-    fetch(`../examples/${filePath}`).then((response) => response.text()).then((text) => {
+
+async function fetchFile(file) {
+    try {
+        let response = await fetch(`../examples/${file}`);
+        let text = await response.text();
         codeEl.value = text;
         lineNumsUpdate();
-        console.log("got response");
-    });
+        console.log("fetched response successfully");
+    } catch(e) {
+        console.log("error while fetching: "+e);
+    }
 }
+if(filePath) {
+    fetchFile(filePath);
+}
+

@@ -1,0 +1,5 @@
+* add stop, pause, step button
+* add visual stack
+* dark theme
+* syntax highlighting
+* labels and print macro
