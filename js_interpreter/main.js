@@ -7,7 +7,7 @@ const lineNumsDiv = document.getElementById("line_nums")
 const runBtn = document.getElementById("run_btn");
 const assembleBtn = document.getElementById("assemble_btn");
 const assembleAndRunBtn = document.getElementById("assemble_and_run_btn");
-const unassembleBtn = document.getElementById("unassemble_btn");
+const disassembleBtn = document.getElementById("disassemble_btn");
 const generateFromStringBtn = document.getElementById("generate_from_string_btn");
 
 const debugCheckbox = document.getElementById("debug_checkbox");
@@ -256,16 +256,16 @@ assembleAndRunBtn.addEventListener("click", async function() {
     info("Assembled and ran successfully!", true);
     setButtonsDisabled(false);
 });
-unassembleBtn.addEventListener("click", async function() {
+disassembleBtn.addEventListener("click", async function() {
     setButtonsDisabled(true);
-    info("Unassembling...", true);
+    info("Disassembling...", true);
 
     let code = codeEl.value;
 
     let unassembled = unassemble(code);
     outputEl.innerText = unassembled;
 
-    info("Unassembled successfully!", true);
+    info("Disassembled successfully!", true);
     setButtonsDisabled(false);
 });
 generateFromStringBtn.addEventListener("click", async function() {
@@ -293,7 +293,7 @@ function setButtonsDisabled(bool) {
     runBtn.disabled = bool;
     assembleBtn.disabled = bool;
     assembleAndRunBtn.disabled = bool;
-    unassembleBtn.disabled = bool;
+    disassembleBtn.disabled = bool;
     generateFromStringBtn.disabled = bool;
 }
 
