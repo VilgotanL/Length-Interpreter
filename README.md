@@ -2,7 +2,7 @@
 An online javascript interpreter for [Length](https://esolangs.org/wiki/Length).
 
 Features:
-* Running, Assembling, Disassembling
+* Running, Assembling, (disassembling is wip)
 * String generator
 * Stop, Pause, and Step
 * Visual Stack
