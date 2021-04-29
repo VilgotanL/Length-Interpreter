@@ -14,7 +14,7 @@ dup #print the value on the stack as a number, we need to duplicate it first sin
 outn
 
 #print a newline
-print '\n' #this is a special instruction only in assembler code, it generates multiple Length instructions
+print "\n" #this is a special instruction only in assembler code, it generates multiple Length instructions
 #print strings are c-styled with quotes around them and they can have escape sequences
 
 dup #duplicate the value on the stack and subtract 100 from the duplicated value
