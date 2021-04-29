@@ -1,3 +1,4 @@
+* ADD PERMALINK (url parameter with compressed length)
 * dark theme
 * syntax highlighting
 * labels and print macro
