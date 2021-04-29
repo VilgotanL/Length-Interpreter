@@ -8,9 +8,9 @@ const notRunningBtnsDiv = document.getElementById("btns_div_notrunning");
 const runningBtnsDiv = document.getElementById("btns_div_running");
 
 const runBtn = document.getElementById("run_btn");
-const assembleBtn = document.getElementById("assemble_btn");
-const assembleAndRunBtn = document.getElementById("assemble_and_run_btn");
-const disassembleBtn = document.getElementById("disassemble_btn");
+const transpileBtn = document.getElementById("transpile_btn");
+const transpileAndRunBtn = document.getElementById("transpile_and_run_btn");
+const detranspileBtn = document.getElementById("detranspile_btn");
 const generateFromStringBtn = document.getElementById("generate_from_string_btn");
 
 const stopButton = document.getElementById("stop_btn");
@@ -68,7 +68,7 @@ function sleepUntilUnpausedOrStepped(initialStopCount) { //also returns when sto
 }
 
 
-async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line numbers for which the assembled lines map to
+async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line numbers for which the transpiled lines map to
     if(!codeLineMap) {
         codeLineMap = code.split("\n").map((str, i) => i);
     }
@@ -243,41 +243,41 @@ runBtn.addEventListener("click", async function() {
     info("Ran successfully!", true);
     setNotRunningButtonsDisabled(false);
 });
-assembleBtn.addEventListener("click", async function() {
+transpileBtn.addEventListener("click", async function() {
     setNotRunningButtonsDisabled(true);
-    info("Assembling...", true);
+    info("Transpiling...", true);
 
     let code = codeEl.value;
 
-    let [assembled, codeLineMap] = assemble(code);
-    outputEl.innerText = assembled;
+    let [transpiled, codeLineMap] = transpile(code);
+    outputEl.innerText = transpiled;
 
-    info("Assembled successfully!", true);
+    info("Transpiled successfully!", true);
     setNotRunningButtonsDisabled(false);
 });
-assembleAndRunBtn.addEventListener("click", async function() {
+transpileAndRunBtn.addEventListener("click", async function() {
     setNotRunningButtonsDisabled(true);
-    info("Assembling...", true);
+    info("Transpiling...", true);
 
     let code = codeEl.value;
 
-    let [assembled, codeLineMap] = assemble(code);
+    let [transpiled, codeLineMap] = transpile(code);
     info("Running...", true);
-    await run(assembled, codeLineMap);
+    await run(transpiled, codeLineMap);
 
-    info("Assembled and ran successfully!", true);
+    info("Transpiled and ran successfully!", true);
     setNotRunningButtonsDisabled(false);
 });
-disassembleBtn.addEventListener("click", async function() {
+detranspileBtn.addEventListener("click", async function() {
     setNotRunningButtonsDisabled(true);
-    info("Disassembling...", true);
+    info("Detranspiling...", true);
 
     let code = codeEl.value;
 
-    let disassembled = disassemble(code);
-    outputEl.innerText = disassembled;
+    let detranspiled = detranspile(code);
+    outputEl.innerText = detranspiled;
 
-    info("Disassembled successfully!", true);
+    info("Detranspiled successfully!", true);
     setNotRunningButtonsDisabled(false);
 });
 generateFromStringBtn.addEventListener("click", async function() {
@@ -338,9 +338,9 @@ showStackCheckbox.addEventListener("change", function() {
 
 function setNotRunningButtonsDisabled(bool) {
     runBtn.disabled = bool;
-    assembleBtn.disabled = bool;
-    assembleAndRunBtn.disabled = bool;
-    disassembleBtn.disabled = bool;
+    transpileBtn.disabled = bool;
+    transpileAndRunBtn.disabled = bool;
+    detranspileBtn.disabled = bool;
     generateFromStringBtn.disabled = bool;
 }
 function setRunning(bool) {

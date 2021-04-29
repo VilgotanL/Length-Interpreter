@@ -1,9 +1,20 @@
+function getNumberedLine(length) { //converts aaaaa to 12345
+    let line = "";
+    for(let j = 0; j < length; j++) {
+        let numStr = (""+(j+1));
+        line += numStr[numStr.length-1];
+    }
+    return line;
+}
+
 function generateFromString(str) {
     let code = "";
     
     for(let i = 0; i < str.length; i++) {
         let id = str.charCodeAt(i);
-        code += "push\n" + id + "\nouta\n";
+        code += getNumberedLine(instr_lengths["push"]) + "\n";
+        code += getNumberedLine(id) + "\n";
+        code += getNumberedLine(instr_lengths["outa"]) + "\n";
     }
     code = code.substring(0, code.length-1); //remove last newline
     return code;
@@ -28,7 +39,7 @@ function fromEscapeCombination(c, lineNum) {
     else err("Error while assembling: unknown escape combination at line "+lineNum);
 }
 
-function assemble(code) {
+function transpile(code) {
     let codeLinesMap = [];
     let lines = code.split("\n");
     let newLines = []; //list of generated code lengths
@@ -105,11 +116,7 @@ function assemble(code) {
     //convert line lengths to 12345
     let newCodeStr = "";
     for(let i = 0; i < newLines.length; i++) {
-        let line = "";
-        for(let j = 0; j < newLines[i]; j++) {
-            let numStr = (""+(j+1));
-            line += numStr[numStr.length-1];
-        }
+        let line = getNumberedLine(newLines[i]);
         newCodeStr += line+"\n";
     }
     newCodeStr = newCodeStr.substring(0, newCodeStr.length-1); //remove last newline
@@ -117,7 +124,7 @@ function assemble(code) {
     return [newCodeStr, codeLinesMap];
 }
 
-function disassemble(code) {
+function detranspile(code) {
     /*let lines = code.split("\n");
     let newLines = [];
 
@@ -131,5 +138,5 @@ function disassemble(code) {
     }
 
     return newLines.join("\n");*/
-    return "Disassembling is currently a WIP since the assembler syntax update!";
+    return "Detranspiling is currently WIP!";
 }

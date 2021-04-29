@@ -2,3 +2,5 @@
 * dark theme
 * syntax highlighting
 * labels and print macro
+* fit a text into length code button
+* make it compatible with the output of lengthtools' dump feature

@@ -8,7 +8,7 @@
 
         <link rel="stylesheet" type="text/css" href="style.css">
 
-        <script defer src="assembler.js"></script>
+        <script defer src="transpiler.js"></script>
         <script defer src="main.js"></script>
 	</head>
     <body>
@@ -16,7 +16,7 @@
             <h1>
                 Length Interpreter
             </h1>
-            <p>Interpreter and "assembler" by VilgotanL</p><a href="https://esolangs.org/wiki/Length">Length esolang by Nailuj29</a><a href="examples.html">Examples</a>
+            <p>Interpreter and transpiler by VilgotanL</p><a href="https://esolangs.org/wiki/Length">Length esolang by Nailuj29</a><a href="examples.html">Examples</a>
             <div class="options_div">
                 <p>Debug:</p> <input id="debug_checkbox" class="options_div_checkbox" type="checkbox" />
                 <p>Slow:</p> <input id="slow_checkbox" class="options_div_checkbox" type="checkbox" />
@@ -33,10 +33,10 @@
             <div class="btns_div">
                 <div id="btns_div_notrunning">
                     <button id="run_btn" class="btn">Run</button>
-                    <button id="assemble_btn" class="btn">Assemble</button>
-                    <button id="assemble_and_run_btn" class="btn">Assemble and run</button>
-                    <button id="disassemble_btn" class="btn">Disassemble</button>
-                    <button id="generate_from_string_btn" class="btn">Generate from string</button>
+                    <button id="transpile_btn" class="btn">Transpile</button>
+                    <button id="transpile_and_run_btn" class="btn">Transpile and run</button>
+                    <button id="detranspile_btn" class="btn">Detranspile (wip)</button>
+                    <button id="generate_from_string_btn" class="btn">Generate Length from string</button>
                 </div>
                 <div id="btns_div_running">
                     <button id="stop_btn" class="btn">Stop</button>

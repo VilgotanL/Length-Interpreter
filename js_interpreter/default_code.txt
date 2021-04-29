@@ -1,27 +1,29 @@
-#hello! this is my assembler syntax for length
-#comments start with hashtags
-#click 'assemble and run' to run assembler code, click 'assemble' to see the generated Length code
-#this program prints the numbers from 1 to 100
+# hello! this is a Length interpreter, you can run regular length code by pasting the code here and clicking 'run'
+# but this interpreter also supports my own language which transpiles to length
+# click 'transpile and run' to run this program
+# click 'transpile' to see this code transpiled to Length
+# comments start with hashtags
+# this program prints the numbers from 1 to 100
 
-push 0 #push 0 to the stack, will get incremented to 1 later
+push 0 # push 0 to the stack, will get incremented to 1 later
 
 @loop_start: #this is a label, it is defined starting with @ and ending with :
 
-push 1 #push 1 and add it, incrementing the number on the stack
+push 1 # push 1 and add it, incrementing the number on the stack
 add
 
-dup #print the value on the stack as a number, we need to duplicate it first since outn pops the value
+dup # print the value on the stack as a number, we need to duplicate it first since outn pops the value
 outn
 
-#print a newline
-print "\n" #this is a special instruction only in assembler code, it generates multiple Length instructions
-#print strings are c-styled with quotes around them and they can have escape sequences
+# print a newline
+print "\n" # this is a special instruction only in assembler code, it generates multiple Length instructions
+# print strings are c-styled with quotes around them and they can have escape sequences
 
-dup #duplicate the value on the stack and subtract 100 from the duplicated value
+dup # duplicate the value on the stack and subtract 100 from the duplicated value
 push 100
 sub
 
-cond #pop the duplicated value and if it is 0 skip the next line, effectively checking if the original value was 100
-gotou @loop_start #goto the loop start, labels can only be accessed/used in gotou and push as the instruction arguments
+cond # pop the duplicated value and if it is 0 skip the next line, effectively checking if the original value was 100
+gotou @loop_start # goto the loop start, labels can only be accessed/used in gotou and push as the instruction arguments
 
-#if the counter was 100 we skipped the gotou and the program ends
+# if the counter was 100 we skipped the gotou and the program will end
