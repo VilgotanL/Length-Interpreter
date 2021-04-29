@@ -369,7 +369,14 @@ function lineNumsUpdate() {
 
     lineNumsDiv.scrollTop = codeEl.scrollTop;
 }
-codeEl.addEventListener("input", lineNumsUpdate); //when codeEl.value changes
+function codeUpdate() {
+    lineNumsUpdate();
+
+    //update window.location.hash to encoded code
+    let encoded = codeEl.value;
+    window.location.hash = "#"+encodeURIComponent(encoded);
+}
+codeEl.addEventListener("input", codeUpdate); //when codeEl.value changes
 codeEl.addEventListener("scroll", function() {
     lineNumsDiv.scrollTop = codeEl.scrollTop;
 });
@@ -396,13 +403,18 @@ async function fetchFile(file) {
         let response = await fetch(`../examples/${file}`);
         let text = await response.text();
         codeEl.value = text;
-        lineNumsUpdate();
+        codeUpdate();
         console.log("fetched response successfully");
     } catch(e) {
         console.log("error while fetching: "+e);
     }
 }
-if(filePath) {
+if(window.location.hash) {
+    //decode window.location.hash
+    let decoded = decodeURIComponent(window.location.hash.substring(1));
+    codeEl.value = decoded;
+    codeUpdate();
+} else if(filePath) {
     fetchFile(filePath);
 }
 
