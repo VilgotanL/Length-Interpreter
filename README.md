@@ -12,5 +12,4 @@ Features:
 
 [Online Javascript Interpreter](https://vilgotanl.github.io/Length-Interpreter/js_interpreter/index.html)
 
-I also made a simple C++ interpreter for Length, the source and the exe is in /cpp_interpreter  
-C++ Interpreter usage: LengthCpp.exe file.len
+I also made a C++ interpreter and a python interpreter for Length, you can find them in the obvious folders in this repo
