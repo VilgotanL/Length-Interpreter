@@ -9,52 +9,127 @@ function generateFromString(str) {
     return code;
 }
 
+function toInt(str, lineNum) {
+    let n = Number(str);
+
+    if(!isFinite(n)) err("Error while assembling: expected valid integer at line "+lineNum);
+    if(n !== Math.floor(n)) err("Error while assembling: expected integer at line "+lineNum);
+    if(n < 0) err("Error while assembling: expected not less than zero integer at line "+lineNum);
+
+    return n;
+}
+function fromEscapeCombination(c, lineNum) {
+    if(c == "n") return "\n";
+    else if(c == "t") return "\t";
+    if(c == "\\") return "\\";
+    if(c == '"') return '"';
+    if(c == "'") return "'";
+    if(c == "0") return "\0";
+    else err("Error while assembling: unknown escape combination at line "+lineNum);
+}
+
 function assemble(code) {
+    let codeLinesMap = [];
     let lines = code.split("\n");
-    let newLines = [];
+    let newLines = []; //list of generated code lengths
 
     for(let i = 0; i < lines.length; i++) {
-        try {
-            let line = lines[i].trim().split("#")[0].trim(); //allow for #comments and indentation
-            let n = Math.floor(Number(line));
-            if(instr_lengths.hasOwnProperty(line) && typeof instr_lengths[line] !== "string") {
-                newLines.push("a".repeat(instr_lengths[line]));
-            } else if(!isNaN(n)) {
-                newLines.push("a".repeat(n));
-            } else {
-                newLines.push("a".repeat(line.length));
+        let line = lines[i].split("#")[0].trim(); //allow for #comments and indentation
+        let parts = line.split(" ");
+
+        if(line === "") { //ignore empty lines
+            codeLinesMap.push(i);
+            continue;
+        }
+
+        let instr = parts.shift().trim();
+        let arg = parts.join(" ").trim();
+
+        if(instr.startsWith("@") && instr.endsWith(":")) { //label
+            newLines.push(instr); //push instr with @ and : as string
+            codeLinesMap.push(i);
+            continue;
+        }
+        
+        if(instr === "gotou" || instr === "push") { //gotou or push (with instruction argument)
+            newLines.push(instr_lengths[instr]);
+            if(arg.startsWith("@")) newLines.push(arg);
+            else newLines.push(toInt(arg, i));
+            codeLinesMap.push(i, i); //since we push instruction and instructionn argument
+        } else if(instr_lengths.hasOwnProperty(instr) && typeof instr_lengths[instr] === "number") { //normal length instruction
+            newLines.push(instr_lengths[instr]);
+            codeLinesMap.push(i);
+        } else if(instr == "print") {
+            if(!(arg.startsWith('"') && arg.startsWith('"'))) err("Error while assembling: print expected quotes around string");
+            let unescapedStr = arg.substring(1, arg.length-1);
+            let str = "";
+            //parse escape sequences
+            for(let j = 0; j < unescapedStr.length; j++) {
+                if(unescapedStr[j] === "\\" && unescapedStr[j + 1] !== undefined) {
+                    str += fromEscapeCombination(unescapedStr[j+1], i);
+                    j++;
+                } else {
+                    str += unescapedStr[j];
+                }
             }
-        } catch(e) {
-            console.log(e);
-            err("Error while assembling: too big line length to generate (at line "+(i)+")");
+            //generate code
+            for(let j = 0; j < str.length; j++) {
+                let charCode = str.charCodeAt(j) ?? 0;
+                newLines.push(instr_lengths["push"]);
+                newLines.push(charCode);
+                newLines.push(instr_lengths["outa"]);
+                codeLinesMap.push(i, i, i);
+            }
+        } else {
+            err("Error while assembling: invalid instruction at line "+i);
         }
     }
-
-    //convert aaaaa to 12345
+    console.log(newLines);
+    let labels = new Map([]);
+    //parse labels
     for(let i = 0; i < newLines.length; i++) {
-        let line = newLines[i].split("");
-        for(let j = 0; j < line.length; j++) {
-            let numStr = (""+(j+1));
-            line[j] = numStr[numStr.length-1];
+        if(typeof newLines[i] === "string" && newLines[i].startsWith("@") && newLines[i].endsWith(":")) {
+            labels.set(newLines[i].substring(1, newLines[i].length-1), i);
+            newLines[i] = 0; //noop
         }
-        newLines[i] = line.join("");
+    }
+    //evaluate labels
+    for(let i = 0; i < newLines.length; i++) {
+        if(typeof newLines[i] === "string" && newLines[i].startsWith("@")) {
+            let n = labels.get(newLines[i].substring(1));
+            if(n === undefined) err("Error while assembling: unknown label at line "+codeLinesMap[i]);
+            newLines[i] = n;
+        }
     }
 
-    return newLines.join("\n");
+    //convert line lengths to 12345
+    let newCodeStr = "";
+    for(let i = 0; i < newLines.length; i++) {
+        let line = "";
+        for(let j = 0; j < newLines[i]; j++) {
+            let numStr = (""+(j+1));
+            line += numStr[numStr.length-1];
+        }
+        newCodeStr += line+"\n";
+    }
+    newCodeStr = newCodeStr.substring(0, newCodeStr.length-1); //remove last newline
+
+    return [newCodeStr, codeLinesMap];
 }
 
 function disassemble(code) {
-    let lines = code.split("\n");
+    /*let lines = code.split("\n");
     let newLines = [];
 
     for(let i = 0; i < lines.length; i++) {
         let line = lines[i].length;
-        if(instr_lengths.hasOwnProperty(line) && typeof instr_lengths[line] !== "number" && newLines[newLines.length-1] !== "push" && newLines[newLines.length-1] !== "gotou") {
+        if(instr_lengths.hasOwnProperty(line) && typeof instr_lengths[line] === "string" && newLines[newLines.length-1] !== "push" && newLines[newLines.length-1] !== "gotou") {
             newLines.push(instr_lengths[line]);
         } else {
             newLines.push(""+line);
         }
     }
 
-    return newLines.join("\n");
+    return newLines.join("\n");*/
+    return "Disassembling is currently a WIP since the assembler syntax update!";
 }

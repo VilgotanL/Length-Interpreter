@@ -68,7 +68,11 @@ function sleepUntilUnpausedOrStepped(initialStopCount) { //also returns when sto
 }
 
 
-async function run(code) {
+async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line numbers for which the assembled lines map to
+    if(!codeLineMap) {
+        codeLineMap = code.split("\n").map((str, i) => i);
+    }
+
     outputEl.innerText = "";
     setRunning(true);
     setPaused(pauseWhenStartedCheckbox.checked);
@@ -95,17 +99,17 @@ async function run(code) {
     while(pc < lines.length) {
 
         if(slow) {
-            highlightGreenLineNum = pc;
+            highlightGreenLineNum = codeLineMap[pc];
             lineNumsUpdate();
         }
         if(stopCount !== initialStopCount) break; //stop if we clicked stop button
         else if(paused) {
-            highlightGreenLineNum = pc;
+            highlightGreenLineNum = codeLineMap[pc];
             lineNumsUpdate();
             stackUpdate(stack);
             await sleepUntilUnpausedOrStepped(initialStopCount);
             if(stopCount !== initialStopCount) break; //break if stopped when paused
-            if(!paused) {
+            if(!paused && !slow) {
                 highlightGreenLineNum = -1;
                 lineNumsUpdate();
                 stackUpdate([]);
@@ -245,7 +249,7 @@ assembleBtn.addEventListener("click", async function() {
 
     let code = codeEl.value;
 
-    let assembled = assemble(code);
+    let [assembled, codeLineMap] = assemble(code);
     outputEl.innerText = assembled;
 
     info("Assembled successfully!", true);
@@ -257,9 +261,9 @@ assembleAndRunBtn.addEventListener("click", async function() {
 
     let code = codeEl.value;
 
-    let assembled = assemble(code);
+    let [assembled, codeLineMap] = assemble(code);
     info("Running...", true);
-    await run(assembled);
+    await run(assembled, codeLineMap);
 
     info("Assembled and ran successfully!", true);
     setNotRunningButtonsDisabled(false);
@@ -400,7 +404,7 @@ let filePath = searchParams.get("file");
 
 async function fetchFile(file) {
     try {
-        let response = await fetch(`../examples/${file}`);
+        let response = await fetch(file);
         let text = await response.text();
         codeEl.value = text;
         codeUpdate();
@@ -415,6 +419,8 @@ if(window.location.hash) {
     codeEl.value = decoded;
     codeUpdate();
 } else if(filePath) {
-    fetchFile(filePath);
+    fetchFile(`../examples/${filePath}`);
+} else {
+    fetchFile("./default_code.txt");
 }
 
