@@ -89,11 +89,11 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
     }
 
     function pop() {
-        if(stack.length <= 0) err("Error: Stack underflow (at line "+(pc)+")"); //pc+1 because line numbers start with 1 but the program counter starts at 0
+        if(stack.length <= 0) err("Error: Stack underflow (at line "+(codeLineMap[pc])+")"); //pc+1 because line numbers start with 1 but the program counter starts at 0
         return stack.pop();
     }
 
-    if(debug) outputEl.innerText += "Starting at line "+(pc)+"\n";
+    if(debug) outputEl.innerText += "Starting at line "+(codeLineMap[pc])+"\n";
     if(showStack) stackUpdate(stack);
     let iters = 0;
     while(pc < lines.length) {
@@ -149,10 +149,10 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
                 break;
             }
             case "gotou": {
-                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after gotou (at line "+(pc)+")");
+                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after gotou (at line "+(codeLineMap[pc])+")");
                 pc = lines[pc + 1] - 1;
                 let prevPc = pc;
-                if(pc < -1) err("Error: cannot goto line "+(pc)+" (at line "+(prevPc)+")");
+                if(pc < -1) err("Error: cannot goto line "+(codeLineMap[pc])+" (at line "+(codeLineMap[prevPc])+")");
                 break;
             }
             case "outn": {
@@ -190,13 +190,13 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
                 break;
             }
             case "push": {
-                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after push (at line "+(pc)+")");
+                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after push (at line "+(codeLineMap[pc])+")");
                 stack.push(lines[pc + 1]);
                 pc++;
                 break;
             }
             case "ror": {
-                if(stack.length < 1) err("Error: Stack underflow (at line "+(pc)+")");
+                if(stack.length < 1) err("Error: Stack underflow (at line "+(codeLineMap[pc])+")");
                 stack.push(stack.shift(0)); //removes bottom of stack and pushes it to the top
                 break;
             }
@@ -208,12 +208,12 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
 
         pc++;
         iters++;
-        if(debug) if(pc < lines.length) outputEl.innerText += "\nNow at line "+(pc)+", stack (right=top): ["+(stack.toString())+"]\n";
+        if(debug) if(pc < lines.length) outputEl.innerText += "\nNow at line "+(codeLineMap[pc])+", stack (right=top): ["+(stack.toString())+"]\n";
     }
     highlightGreenLineNum = -1;
     lineNumsUpdate();
     if(showStack) stackUpdate(stack);
-    if(debug) outputEl.innerText += "\nEnded at line "+(pc - 1)+"\n";
+    if(debug) outputEl.innerText += "\nEnded at line "+(codeLineMap[pc] - 1)+"\n";
 
     setRunning(false);
     setPaused(false);

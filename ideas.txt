@@ -1,6 +1,4 @@
-* ADD PERMALINK (url parameter with compressed length)
-* dark theme
-* syntax highlighting
-* labels and print macro
-* fit a text into length code button
+* dark theme?
+* add fit a text into length code button
 * make it compatible with the output of lengthtools' dump feature
+* add a html page that explains how to use the interpreter
