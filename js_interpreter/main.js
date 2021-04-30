@@ -68,9 +68,9 @@ function sleepUntilUnpausedOrStepped(initialStopCount) { //also returns when sto
 }
 
 
-async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line numbers for which the transpiled lines map to
-    if(!codeLineMap) {
-        codeLineMap = code.split("\n").map((str, i) => i);
+async function run(code, codeLinesMap) { //codeLineMap is a list of codeEL line numbers for which the transpiled lines map to
+    if(!codeLinesMap) {
+        codeLinesMap = code.split("\n").map((str, i) => i);
     }
 
     outputEl.innerText = "";
@@ -83,28 +83,30 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
     let lines = []; //list of lengths of each line
     let stack = [];
     let pc = 0; //program counter
+    let codeLinesPc = 0; //program counter at the not-transpiled cpde
 
     for(let i = 0; i < strLines.length; i++) {
         lines.push(strLines[i].length);
     }
 
     function pop() {
-        if(stack.length <= 0) err("Error: Stack underflow (at line "+(codeLineMap[pc])+")"); //pc+1 because line numbers start with 1 but the program counter starts at 0
+        if(stack.length <= 0) err("Error: Stack underflow (at line "+(codeLinesPc)+")"); //pc+1 because line numbers start with 1 but the program counter starts at 0
         return stack.pop();
     }
 
-    if(debug) outputEl.innerText += "Starting at line "+(codeLineMap[pc])+"\n";
+    if(debug) outputEl.innerText += "Starting at line "+(codeLinesPc)+"\n";
     if(showStack) stackUpdate(stack);
     let iters = 0;
     while(pc < lines.length) {
+        codeLinesPc = codeLinesMap[pc];
 
         if(slow) {
-            highlightGreenLineNum = codeLineMap[pc];
+            highlightGreenLineNum = codeLinesPc;
             lineNumsUpdate();
         }
         if(stopCount !== initialStopCount) break; //stop if we clicked stop button
         else if(paused) {
-            highlightGreenLineNum = codeLineMap[pc];
+            highlightGreenLineNum = codeLinesPc;
             lineNumsUpdate();
             stackUpdate(stack);
             await sleepUntilUnpausedOrStepped(initialStopCount);
@@ -149,10 +151,10 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
                 break;
             }
             case "gotou": {
-                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after gotou (at line "+(codeLineMap[pc])+")");
+                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after gotou (at line "+(codeLinesPc)+")");
                 pc = lines[pc + 1] - 1;
                 let prevPc = pc;
-                if(pc < -1) err("Error: cannot goto line "+(codeLineMap[pc])+" (at line "+(codeLineMap[prevPc])+")");
+                if(pc < -1) err("Error: cannot goto line "+(codeLinesPc)+" (at line "+(codeLinesMap[prevPc])+")");
                 break;
             }
             case "outn": {
@@ -190,13 +192,13 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
                 break;
             }
             case "push": {
-                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after push (at line "+(codeLineMap[pc])+")");
+                if(lines[pc + 1] === undefined) err("Error: expected instruction argument after push (at line "+(codeLinesPc)+")");
                 stack.push(lines[pc + 1]);
                 pc++;
                 break;
             }
             case "ror": {
-                if(stack.length < 1) err("Error: Stack underflow (at line "+(codeLineMap[pc])+")");
+                if(stack.length < 1) err("Error: Stack underflow (at line "+(codeLinesPc)+")");
                 stack.push(stack.shift(0)); //removes bottom of stack and pushes it to the top
                 break;
             }
@@ -208,12 +210,12 @@ async function run(code, codeLineMap) { //codeLineMap is a list of codeEL line n
 
         pc++;
         iters++;
-        if(debug) if(pc < lines.length) outputEl.innerText += "\nNow at line "+(codeLineMap[pc])+", stack (right=top): ["+(stack.toString())+"]\n";
+        if(debug) if(pc < lines.length) outputEl.innerText += "\nNow at line "+(codeLinesPc)+", stack (right=top): ["+(stack.toString())+"]\n";
     }
     highlightGreenLineNum = -1;
     lineNumsUpdate();
     if(showStack) stackUpdate(stack);
-    if(debug) outputEl.innerText += "\nEnded at line "+(codeLineMap[pc] - 1)+"\n";
+    if(debug) outputEl.innerText += "\nEnded at line "+(codeLinesPc - 1)+"\n";
 
     setRunning(false);
     setPaused(false);

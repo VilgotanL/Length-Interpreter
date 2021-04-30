@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!-- yas -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Length Interpreter</title>
+
+    <link rel="stylesheet" type="text/css" href="doc_style.css">
+</head>
+<body>
+    <div class="main_div">
+        <h1 class="title_h1">About</h1>
+        <a class="title_link" href="index.html">Interpreter</a><a class="title_link" href="examples.html">Examples</a>
+        <p>
+            Hello, this is my Length interpreter.
+            This interpreter can run regular Length, but it can also transpile my own language to length.
+        </p>
+        <br>
+
+        <h1>Length</h1>
+        <p>
+            <a class="inline_link" href="https://esolangs.org/wiki/Length">Length</a>
+            is an esoteric programming language created by
+            <a class="inline_link" href="https://esolangs.org/wiki/Length">Nailuj29</a><br>
+            <br>
+            If you don't know how it works check out <a class="inline_link" href="https://esolangs.org/wiki/Length">https://esolangs.org/wiki/Length</a>
+        </p>
+
+        <h2>FAQ about Length</h2>
+        <p>Do line lengths that don't have an instruction get ignored?</p>
+        <blockquote>
+            Yes, all lines that don't have lengths of valid instructions are ignored.
+        </blockquote>
+        <p>How does gotou and gotos work?</p>
+        <blockquote>
+            Gotou and gotos are a bit confusing in Length because gotou indexes lines at 0 while gotos indexes them at 0 but skips a line (effectively indexing lines starting at -1)<br>
+            Suppose this pseudocode: gotou 0<br>
+            In that code the next instruction to be executed is the instruction at line 0. (the first line)<br>
+            Now suppose this pseudocode: gotos<br>
+            In that pseudocode the gotos instruction will pop the top of the stack and goto that line, but it will skip the instruction at that line, making the next instruction executed be the instruction at the line of the popped value plus 1<br>
+        </blockquote>
+        <br>
+
+        <h1>My language</h1>
+        <p>
+            My language is a language that transpiles to length, it has all the lenght instructions and a few more.<br>
+            <br>
+            An instruction in my language might look like this:<br>
+            outn<br>
+            Or like this, with an instruction argument:<br>
+            push 10<br>
+            <br>
+            My language also has labels, you can define a label like this:<br>
+            @myLabel:<br>
+            And if you want to goto that label you can do this:<br>
+            gotou @myLabel<br>
+            <br>
+            Here are some instructions that only exist in my language:<br>
+        </p>
+        <br>
+        <p>print "string\n"</p>
+        <blockquote>
+            Prints a C-styled string to the output stream
+        </blockquote>
+        <p>ifeq_gotou @label1</p>
+        <blockquote>
+            Pops two values from the stack and if they are equal, goes to the specified label
+        </blockquote>
+    </div>
+</body>
+</html>

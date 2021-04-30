@@ -23,7 +23,7 @@ function generateFromString(str) {
 function toInt(str, lineNum) {
     let n = Number(str);
 
-    if(!isFinite(n)) err("Error while assembling: expected valid integer at line "+lineNum);
+    if(!isFinite(n) || !str.trim()) err("Error while assembling: expected valid integer at line "+lineNum);
     if(n !== Math.floor(n)) err("Error while assembling: expected integer at line "+lineNum);
     if(n < 0) err("Error while assembling: expected not less than zero integer at line "+lineNum);
 
@@ -91,6 +91,17 @@ function transpile(code) {
                 newLines.push(instr_lengths["outa"]);
                 codeLinesMap.push(i, i, i);
             }
+        } else if(instr === "ifeq_gotou") {
+            newLines.push(instr_lengths["sub"]); //subtract the two items
+            newLines.push(instr_lengths["cond"]); //if not 0
+            newLines.push(instr_lengths["gotou"]);
+            newLines.push(newLines.length + 3); //skip the else
+            newLines.push(instr_lengths["gotou"]); //else
+            //push arg
+            if(arg.startsWith("@")) newLines.push(arg);
+            else newLines.push(toInt(arg, i));
+            //update codeLinesMap
+            codeLinesMap.push(i, i, i, i, i, i);
         } else {
             err("Error while assembling: invalid instruction at line "+i);
         }
