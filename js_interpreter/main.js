@@ -12,6 +12,7 @@ const transpileBtn = document.getElementById("transpile_btn");
 const transpileAndRunBtn = document.getElementById("transpile_and_run_btn");
 const detranspileBtn = document.getElementById("detranspile_btn");
 const generateFromStringBtn = document.getElementById("generate_from_string_btn");
+const brainfuckToLengthBtn = document.getElementById("bf_to_length_btn");
 
 const stopButton = document.getElementById("stop_btn");
 const pauseButton = document.getElementById("pause_btn");
@@ -292,6 +293,18 @@ generateFromStringBtn.addEventListener("click", async function() {
     outputEl.innerText = generated;
 
     info("Generated code from string successfully!", true);
+    setNotRunningButtonsDisabled(false);
+});
+brainfuckToLengthBtn.addEventListener("click", async function() {
+    setNotRunningButtonsDisabled(true);
+    info("Generating Length from brainfuck...", true);
+
+    let input = codeEl.value;
+
+    let generated = brainfuckToLength(input);
+    outputEl.innerText = generated;
+
+    info("Generated Length from brainfuck successfully!", true);
     setNotRunningButtonsDisabled(false);
 });
 

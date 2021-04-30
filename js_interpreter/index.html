@@ -8,6 +8,7 @@
 
         <link rel="stylesheet" type="text/css" href="style.css">
 
+        <script defer src="bf_to_length_transpiler.js"></script>
         <script defer src="transpiler.js"></script>
         <script defer src="main.js"></script>
 	</head>
@@ -21,14 +22,12 @@
             <a href="examples.html">Examples</a>
             <a href="about.html">About</a>
             <div class="options_div">
-            <div class="options_div">
                 <p>Debug:</p> <input id="debug_checkbox" class="options_div_checkbox" type="checkbox" />
                 <p>Slow:</p> <input id="slow_checkbox" class="options_div_checkbox" type="checkbox" />
                 <p>Show stack:</p> <input id="show_stack_checkbox" class="options_div_checkbox" type="checkbox" checked />
                 <p>Pause when start running:</p> <input id="pause_when_ran_checkbox" class="options_div_checkbox" type="checkbox" />
             </div>
             <div id="stack_div" class="stack_div">
-
             </div>
             <div class="code_container">
                 <pre id="line_nums" class="line_nums"> 0 </pre><textarea id="input" class="input" contenteditable="true" spellcheck="false">code/input</textarea>
@@ -41,6 +40,7 @@
                     <button id="transpile_and_run_btn" class="btn">Transpile and run</button>
                     <button id="detranspile_btn" class="btn">Detranspile (wip)</button>
                     <button id="generate_from_string_btn" class="btn">Generate Length from string</button>
+                    <button id="bf_to_length_btn" class="btn">Brainfuck-to-Length</button>
                 </div>
                 <div id="btns_div_running">
                     <button id="stop_btn" class="btn">Stop</button>
