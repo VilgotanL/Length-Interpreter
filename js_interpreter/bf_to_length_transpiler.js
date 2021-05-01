@@ -72,11 +72,11 @@ async function brainfuckToLength(code) {
             let isZeroId = getId();
             let afterId = getId(); //for [
             let afterId2 = getId(); //for ], will be defined at ]
-            lineLengths.push("push", 0);
+            lineLengths.push("dup", "push", 0);
             ifEqGotou(isZeroId);
             lineLengths.push("gotou", afterId);
             isZeroId = defineLabel(isZeroId);
-            lineLengths.push(afterId2);
+            lineLengths.push("gotou", afterId2);
             afterId = defineLabel(afterId);
 
             loopIdStack.push(afterId, afterId2);
