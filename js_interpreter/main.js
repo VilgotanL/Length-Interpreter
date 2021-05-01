@@ -40,6 +40,11 @@ Object.keys(instr_lengths).forEach(function(key) { //for each key
     instr_lengths[instr_lengths[key]] = key;
 });
 
+let getId_currId = 0;
+function getId() {
+    return getId_currId++;
+}
+
 function err(str) {
     info(str, false);
     setNotRunningButtonsDisabled(false);
@@ -301,7 +306,7 @@ brainfuckToLengthBtn.addEventListener("click", async function() {
 
     let input = codeEl.value;
 
-    let generated = brainfuckToLength(input);
+    let generated = await brainfuckToLength(input);
     outputEl.innerText = generated;
 
     info("Generated Length from brainfuck successfully!", true);
@@ -357,6 +362,7 @@ function setNotRunningButtonsDisabled(bool) {
     transpileAndRunBtn.disabled = bool;
     detranspileBtn.disabled = bool;
     generateFromStringBtn.disabled = bool;
+    brainfuckToLengthBtn.disabled = bool;
 }
 function setRunning(bool) {
     if(bool) {
