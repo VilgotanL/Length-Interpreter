@@ -30,7 +30,7 @@ def pop(index = -1):
 
 while pc >= 0 and pc < len(program):
 	if program[pc] == 9: #inp
-		stack.append(ord(input("")))
+		stack.append(ord(sys.stdin.read(1)))
 	elif program[pc] == 10: #add
 		stack.append(pop() + pop())
 	elif program[pc] == 11: #sub
